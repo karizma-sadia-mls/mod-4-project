@@ -16,4 +16,3 @@ export const fetchArtworks = () => {
       return { data: null, error };
     });
 };
-git 
