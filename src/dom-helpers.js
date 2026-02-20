@@ -24,3 +24,7 @@ export const renderArtworks = (artworks) => {
     artworkList.appendChild(li);
   });
 };
+
+export const renderSingleArtwork = (id) => {
+
+}
