@@ -1,5 +1,4 @@
 //this file you would use dom helpers and fetch helpers to render data to hmtl pages
-<<<<<<< HEAD
 
 const container = document.getElementById("artwork");
 
@@ -28,6 +27,3 @@ fetch("https://api.artic.edu/api/v1/artworks/129884")
     container.innerHTML = `<p>Error loading artwork.</p>`;
     console.error("Fetch error:", error);
   });
-=======
-// html pages should have elements that you can add click handlers too (buttons)
->>>>>>> d1d44a4e4eaf8cba4be37f1c5d79ac3f9a567ccc
