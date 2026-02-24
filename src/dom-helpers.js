@@ -25,6 +25,7 @@ export const renderArtworks = (artworks) => {
   });
 };
 
+<<<<<<< HEAD
 const container = document.getElementById("artwork");
 
  async function loadArtwork() {
@@ -69,3 +70,8 @@ const container = document.getElementById("artwork");
 }
 
 loadArtwork();
+=======
+export const renderSingleArtwork = (id) => {
+
+}
+>>>>>>> d1d44a4e4eaf8cba4be37f1c5d79ac3f9a567ccc
