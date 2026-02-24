@@ -24,3 +24,48 @@ export const renderArtworks = (artworks) => {
     artworkList.appendChild(li);
   });
 };
+
+const container = document.getElementById("artwork");
+
+ async function loadArtwork() {
+  try {
+    const response = await fetch("https://api.artic.edu/api/v1/artworks/129884");
+    if (!response.ok) throw new Error("Failed to fetch data");
+
+    const result = await response.json();
+    const artwork = result.data;
+
+    // Clear container
+    container.textContent = "";
+
+    // Create elements
+    const title = document.createElement("h2");
+    title.textContent = artwork.title;
+
+    const artist = document.createElement("p");
+    artist.textContent = `Artist: ${artwork.artist_title || "Unknown"}`;
+
+    const date = document.createElement("p");
+    date.textContent = `Date: ${artwork.date_display || "N/A"}`;
+
+    container.appendChild(title);
+    container.appendChild(artist);
+    container.appendChild(date);
+
+    // Add image if available
+    if (artwork.image_id) {
+      const img = document.createElement("img");
+      img.src = `https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`;
+      img.alt = artwork.title;
+      img.style.maxWidth = "400px";
+
+      container.appendChild(img);
+    }
+
+  } catch (error) {
+    container.textContent = "Error loading artwork.";
+    console.error(error);
+  }
+}
+
+loadArtwork();
