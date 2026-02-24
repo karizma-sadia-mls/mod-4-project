@@ -1,26 +1,37 @@
 //this is where we will do DOM manipulation to query DOM elements and create new ones
 
 export const renderArtworks = (artworks) => {
-  artworkList.innerHTML = ""; // clear old results
+  //must fetch image id from each artwork
+
+  const artworkList = document.getElementById("artwork-list");
+  artworkList.innerHTML = "";
 
   artworks.forEach((artwork) => {
-    const li = document.createElement("li");
+    let image = fetch(artwork.api_link)
+      .then((res) => {
+        return res.json()
+      })
+      .then((data) => {
+        let image = data.data.image_id
+        console.log(image)
+        const li = document.createElement("li");
 
-    const title = document.createElement("h3");
-    title.textContent = artwork.title;
+        const title = document.createElement("h3");
+        title.textContent = artwork.title;
 
-    const img = document.createElement("img");
+        const img = document.createElement("img");
 
-    if (artwork.image_id) {
-      img.src = `https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`;
-      img.alt = artwork.title;
-    } else {
-      img.alt = "No image available";
-    }
+        if (image) {
+          img.src = `https://www.artic.edu/iiif/2/${image}/full/843,/0/default.jpg`;
+          img.alt = artwork.title;
+          img.style.width = "200px";
+        } else {
+          img.alt = "No image available";
+        }
 
-    li.appendChild(img);
-    li.appendChild(title);
+        li.append(img, title);
+        artworkList.appendChild(li);
+      })
 
-    artworkList.appendChild(li);
   });
 };
