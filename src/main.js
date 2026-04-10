@@ -54,6 +54,7 @@ const toggleAudio = () => {
     const gain = audioCtx.createGain();
     gain.gain.value = 0.05;
     gain.connect(audioCtx.destination);
+
     [261.63, 329.63, 392.0, 523.25].forEach((freq) => {
       const osc = audioCtx.createOscillator();
       osc.type = 'sine';
@@ -62,6 +63,7 @@ const toggleAudio = () => {
       osc.start();
       oscillators.push(osc);
     });
+
     audioPlaying = true;
     audioBtn.textContent = '♪ Stop Music';
   } else {

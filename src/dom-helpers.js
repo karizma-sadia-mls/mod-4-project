@@ -1,7 +1,7 @@
 const IMG_BASE = 'https://www.artic.edu/iiif/2';
 
 const buildImgUrl = (imageId, size = 400) =>
-  `${IMG_BASE}/${imageId}/full/${size},/0/default.jpg`;
+  `https://www.artic.edu/iiif/2/${imageId}/full/${size},/0/default.jpg`;
 
 export const renderGallery = (artworks) => {
   const artworkDiv = document.getElementById('artwork');
@@ -16,6 +16,24 @@ export const renderGallery = (artworks) => {
     artworkDiv.innerHTML = '<p class="no-results">No results — try searching something else.</p>';
     return;
   }
+
+  withImages.forEach((artwork) => {
+    const li = document.createElement('li');
+
+    const title = document.createElement('h3');
+    title.textContent = artwork.title;
+
+    const img = document.createElement('img');
+    img.src = buildImgUrl(artwork.image_id);
+    img.alt = artwork.title;
+    img.style.width = "200px";
+
+    li.append(img, title);
+    artworkDiv.appendChild(li);
+  });
+
+  statusBar.textContent = `Showing ${withImages.length} artworks`;
+};
 
   statusBar.textContent = `Showing ${withImages.length} artwork(s)`;
 
