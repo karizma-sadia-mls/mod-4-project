@@ -1,81 +1,72 @@
-//this is where we will do DOM manipulation to query DOM elements and create new ones
+const IMG_BASE = 'https://www.artic.edu/iiif/2';
 
-export const renderArtworks = (artworks) => {
-  //must fetch image id from each artwork
+const buildImgUrl = (imageId, size = 400) =>
+  `https://www.artic.edu/iiif/2/${imageId}/full/${size},/0/default.jpg`;
 
-  const artworkList = document.getElementById("artwork-list");
-  artworkList.innerHTML = "";
+export const renderGallery = (artworks) => {
+  const artworkDiv = document.getElementById('artwork');
+  const statusBar = document.getElementById('status-bar');
 
-  artworks.forEach((artwork) => {
-    let image = fetch(artwork.api_link)
-      .then((res) => {
-        return res.json()
-      })
-      .then((data) => {
-        let image = data.data.image_id
-        console.log(image)
-        const li = document.createElement("li");
+  artworkDiv.innerHTML = '';
 
-        const title = document.createElement("h3");
-        title.textContent = artwork.title;
+  const withImages = artworks.filter((a) => a.image_id);
 
-        const img = document.createElement("img");
+  if (withImages.length === 0) {
+    statusBar.textContent = 'No artworks found. Try a different keyword.';
+    artworkDiv.innerHTML = '<p class="no-results">No results — try searching something else.</p>';
+    return;
+  }
 
-        if (image) {
-          img.src = `https://www.artic.edu/iiif/2/${image}/full/843,/0/default.jpg`;
-          img.alt = artwork.title;
-          img.style.width = "200px";
-        } else {
-          img.alt = "No image available";
-        }
+  withImages.forEach((artwork) => {
+    const li = document.createElement('li');
 
-        li.append(img, title);
-        artworkList.appendChild(li);
-      })
-
-  });
-};
-const container = document.getElementById("artwork");
-
-async function loadArtwork() {
-  try {
-    const response = await fetch("https://api.artic.edu/api/v1/artworks/129884");
-    if (!response.ok) throw new Error("Failed to fetch data");
-
-    const result = await response.json();
-    const artwork = result.data;
-
-    // Clear container
-    container.textContent = "";
-
-    // Create elements
-    const title = document.createElement("h2");
+    const title = document.createElement('h3');
     title.textContent = artwork.title;
 
-    const artist = document.createElement("p");
-    artist.textContent = `Artist: ${artwork.artist_title || "Unknown"}`;
+    const img = document.createElement('img');
+    img.src = buildImgUrl(artwork.image_id);
+    img.alt = artwork.title;
+    img.style.width = "200px";
 
-    const date = document.createElement("p");
-    date.textContent = `Date: ${artwork.date_display || "N/A"}`;
+    li.append(img, title);
+    artworkDiv.appendChild(li);
+  });
 
-    container.appendChild(title);
-    container.appendChild(artist);
-    container.appendChild(date);
+  statusBar.textContent = `Showing ${withImages.length} artworks`;
+};
 
-    // Add image if available
-    if (artwork.image_id) {
-      const img = document.createElement("img");
-      img.src = `https://www.artic.edu/iiif/2/${artwork.image_id}/full/843,/0/default.jpg`;
-      img.alt = artwork.title;
-      img.style.maxWidth = "400px";
+  statusBar.textContent = `Showing ${withImages.length} artwork(s)`;
 
-      container.appendChild(img);
-    }
+  const grid = document.createElement('div');
+  grid.className = 'gallery-grid';
 
-  } catch (error) {
-    container.textContent = "Error loading artwork.";
-    console.error(error);
-  }
-}
+  withImages.forEach((artwork) => {
+    const card = document.createElement('div');
+    card.className = 'art-card';
+    card.innerHTML = `
+      <img src="${buildImgUrl(artwork.image_id)}" alt="${artwork.title}" loading="lazy" />
+      <p class="card-title">${artwork.title}</p>
+    `;
+    card.addEventListener('click', () => openModal(artwork));
+    grid.appendChild(card);
+  });
 
-loadArtwork();
+  artworkDiv.appendChild(grid);
+};
+
+export const openModal = (artwork) => {
+  document.getElementById('modal').classList.remove('hidden');
+  document.getElementById('modal-title').textContent = artwork.title;
+  document.getElementById('modal-img').src = artwork.image_id
+    ? buildImgUrl(artwork.image_id, 600)
+    : '';
+  document.getElementById('modal-img').alt = artwork.title;
+  document.getElementById('modal-meta').innerHTML = `
+    <p><strong>Artist:</strong> ${artwork.artist_display || 'Unknown'}</p>
+    <p><strong>Date:</strong> ${artwork.date_display || 'Unknown'}</p>
+  `;
+};
+
+export const closeModal = () => {
+  document.getElementById('modal').classList.add('hidden');
+};
