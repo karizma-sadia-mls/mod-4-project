@@ -1,7 +1,7 @@
 const IMG_BASE = 'https://www.artic.edu/iiif/2';
 
 const buildImgUrl = (imageId, size = 400) =>
-  `https://www.artic.edu/iiif/2/${imageId}/full/${size},/0/default.jpg`;
+  `${IMG_BASE}/${imageId}/full/${size},/0/default.jpg`;
 
 export const renderGallery = (artworks) => {
   const artworkDiv = document.getElementById('artwork');
@@ -17,24 +17,6 @@ export const renderGallery = (artworks) => {
     return;
   }
 
-  withImages.forEach((artwork) => {
-    const li = document.createElement('li');
-
-    const title = document.createElement('h3');
-    title.textContent = artwork.title;
-
-    const img = document.createElement('img');
-    img.src = buildImgUrl(artwork.image_id);
-    img.alt = artwork.title;
-    img.style.width = "200px";
-
-    li.append(img, title);
-    artworkDiv.appendChild(li);
-  });
-
-  statusBar.textContent = `Showing ${withImages.length} artworks`;
-};
-
   statusBar.textContent = `Showing ${withImages.length} artwork(s)`;
 
   const grid = document.createElement('div');
@@ -43,10 +25,15 @@ export const renderGallery = (artworks) => {
   withImages.forEach((artwork) => {
     const card = document.createElement('div');
     card.className = 'art-card';
-    card.innerHTML = `
-      <img src="${buildImgUrl(artwork.image_id)}" alt="${artwork.title}" loading="lazy" />
-      <p class="card-title">${artwork.title}</p>
-    `;
+    const img = document.createElement('img');
+    img.src = buildImgUrl(artwork.image_id);
+    img.alt = artwork.title;
+    img.loading = 'lazy';
+    const title = document.createElement('p');
+    title.className = 'card-title';
+    title.textContent = artwork.title;
+    card.appendChild(img);
+    card.appendChild(title);
     card.addEventListener('click', () => openModal(artwork));
     grid.appendChild(card);
   });
@@ -57,14 +44,19 @@ export const renderGallery = (artworks) => {
 export const openModal = (artwork) => {
   document.getElementById('modal').classList.remove('hidden');
   document.getElementById('modal-title').textContent = artwork.title;
-  document.getElementById('modal-img').src = artwork.image_id
-    ? buildImgUrl(artwork.image_id, 600)
-    : '';
-  document.getElementById('modal-img').alt = artwork.title;
-  document.getElementById('modal-meta').innerHTML = `
-    <p><strong>Artist:</strong> ${artwork.artist_display || 'Unknown'}</p>
-    <p><strong>Date:</strong> ${artwork.date_display || 'Unknown'}</p>
-  `;
+  const modalImg = document.getElementById('modal-img');
+  modalImg.src = artwork.image_id ? buildImgUrl(artwork.image_id, 600) : '';
+  modalImg.alt = artwork.title;
+  const artist = artwork.artist_display || 'Unknown';
+  const date = artwork.date_display || 'Unknown';
+  const meta = document.getElementById('modal-meta');
+  meta.innerHTML = '';
+  const p1 = document.createElement('p');
+  p1.innerHTML = '<strong>Artist:</strong> ' + artist;
+  const p2 = document.createElement('p');
+  p2.innerHTML = '<strong>Date:</strong> ' + date;
+  meta.appendChild(p1);
+  meta.appendChild(p2);
 };
 
 export const closeModal = () => {
